@@ -2,9 +2,7 @@
 
 uint BUF_SIZE = 1024;
 
-
-
-void lb_base::start_server(string ip, int port)
+void start_server(string ip, int port, shared_ptr<lb_base> &lb)
 {
     int lsockfd = Socket();
     Setsockopt(lsockfd);
@@ -65,7 +63,9 @@ void lb_base::start_server(string ip, int port)
                     }
                     else
                     {
-                        cout << buffer << endl;
+                        auto myep = lb->select();
+                        std::cout << "id: " << myep->get_id() << ", host: " << myep->get_host() << ", port: " << myep->get_port() << ", alive: " << myep->get_alive() << std::endl;
+
                         //send(it->fd, buffer, strlen(buffer), 0);
                     }
                 }
