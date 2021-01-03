@@ -2,7 +2,9 @@
 
 uint BUF_SIZE = 1024;
 
-void start_server(string ip, int port)
+
+
+void lb_base::start_server(string ip, int port)
 {
     int lsockfd = Socket();
     Setsockopt(lsockfd);
