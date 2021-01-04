@@ -18,11 +18,14 @@ void log_close()
 
 void log(string time, string ip, int port)
 {
-    logfd << "time: " << time << " || "
-          << "ip: " << ip << " || "
-          << "port: " << port << endl;
+    logfd << "ip: " << ip << "|" \
+          << "port: " << port << "|" \
+          << "time: " << time << endl;
 }
 
-void log_terminal(uint proposer, string recv_pid, bool ok)
+void log_terminal(string time, string ip, int port)
 {
+    cout << "ip: " << ip << " | " \
+         << "port: " << port << " | " \
+         << "time: " << time << endl;
 }

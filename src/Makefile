@@ -1,5 +1,5 @@
 CC = g++
-OBJS = main.o loadbalancer.o socket.o log.o
+OBJS = main.o loadbalancer.o socket.o log.o config.o
 OBJDIR = ../.obj/
 LOGDIR = ../logs/
 EXEFILE = run
@@ -8,7 +8,7 @@ MKDIR_P = mkdir -p
 
 
 all: mkdirobj $(OBJS)
-	$(CC) $(OBJDIR)main.o  $(OBJDIR)log.o \
+	$(CC) $(OBJDIR)main.o $(OBJDIR)log.o $(OBJDIR)config.o \
 	$(OBJDIR)socket.o $(OBJDIR)loadbalancer.o \
 	-o $(EXEFILE)
 
@@ -27,5 +27,8 @@ loadbalancer.o: loadbalancer.cpp
 log.o: log.cpp
 	$(CC) -c log.cpp -o $(OBJDIR)log.o
 
+config.o: config.cpp
+	$(CC) -c config.cpp -o $(OBJDIR)config.o
+	
 clean:
 	rm -rf $(OBJDIR) $(EXEFILE)

@@ -18,8 +18,10 @@ void log_init(string filename, string ip);
 
 void log(string time, string ip, int port);
 
+void log_terminal(string time, string ip, int port);
+
 void log_close();
 
-void log_terminal(uint proposer_pid, string recv_pid, bool ok);
+
 
 #endif

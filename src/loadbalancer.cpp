@@ -89,18 +89,20 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
     }
 }
 
-char *get_time()
-{
-    auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
-    return ctime(&timenow);
-}
 
 void handle_log(int client_sock)
 {
+    // get client addr
     sockaddr_in sa = get_client_addr(client_sock);
     int port = htons(sa.sin_port);
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(sa.sin_addr), ip, INET_ADDRSTRLEN);
+
+    // get current time
     string timenow = get_time();
+
+    // write to log
     log(timenow, ip, port);
+    log_terminal(timenow, ip, port);
+    // add to msg queue
 }

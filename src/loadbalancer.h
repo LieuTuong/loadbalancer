@@ -2,11 +2,9 @@
 #define __LOADBALANCER_H__
 #include "socket.h"
 #include "log.h"
+#include "config.h"
 #include <string.h>
-#include <memory>
-#include <vector>
-#include <ctime>
-#include <chrono>
+
 
 extern vector<pollfd> poll_sets;
 extern uint BUF_SIZE;
@@ -90,8 +88,6 @@ public:
 };
 
 void start_server(string ip, int port, shared_ptr<lb_base> &lb);
-
-char* get_time();
 
 void handle_log(int client_sock);
 #endif
