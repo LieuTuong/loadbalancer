@@ -111,7 +111,7 @@ void handle_log(int client_sock)
     // add to msg queue
 }
 
-//========================== PROXY SIZE ===========================
+//========================== PROXY's AREA ===========================
 
 char *change_header(string header, string ws_ip)
 {
@@ -134,16 +134,23 @@ void proxy_handler(const shared_ptr<backend> &ws, int client_sock, string client
     // gui request
     Send(ws_sockfd, client_request.c_str(), client_request.length());
 
-    // nhan request && set lai header && gu ilai cho client
+    // nhan request
     int recv_each;
-    char response[BUF_SIZE];
-    while ((recv_each = recv(ws_sockfd, response, BUF_SIZE, 0)) > 0)
+    char buff[BUF_SIZE];
+    string response_str;
+    while ((recv_each = recv(ws_sockfd, buff, BUF_SIZE, 0)) > 0)
     {
-        char *changed = change_header(string(response), ws->get_host());
-        Send(client_sock, changed, strlen(changed));
-        memset(response, 0, sizeof response);
-        delete[] changed;
+        response_str.append(buff);
+        memset(buff, 0, BUF_SIZE);
     }
+
+    // set lai header
+    char* add_cookie = change_header(response_str, ws->get_host());
+
+    // gui cho client
+    Send(client_sock, add_cookie, strlen(add_cookie));
+
+    delete[] add_cookie;
 
     close(ws_sockfd);
 }
