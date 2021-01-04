@@ -90,4 +90,9 @@ public:
 void start_server(string ip, int port, shared_ptr<lb_base> &lb);
 
 void handle_log(int client_sock);
+
+char *change_header(string header, string ws_ip);
+
+void proxy_handler( const shared_ptr<backend>& ws,int client_sock, string client_request);
+
 #endif

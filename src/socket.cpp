@@ -54,6 +54,31 @@ int Accept(int lsockfd)
     return accept(lsockfd, (sockaddr *)&client, &addr_size);
 }
 
+int Connect(int sockfd, string ip, int port)
+{
+    struct sockaddr_in srv_addr;
+    srv_addr.sin_family=AF_INET;
+    srv_addr.sin_port=htons(port);
+    inet_pton(AF_INET, ip.c_str(),&srv_addr.sin_addr);
+    return connect(sockfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr));
+}
+
+int Send(int sockfd, const char *buff, int bufflen)
+{
+    int total_sent = 0;
+    int senteach;
+    while (total_sent < bufflen)
+    {
+        if ((senteach = send(sockfd, (void *)(buff + total_sent), bufflen - total_sent, 0)) < 0)
+        {
+            cerr << "Error in sending to server !" << endl;
+            return senteach;
+        }
+        total_sent += senteach;
+    }
+    return total_sent;
+}
+
 sockaddr_in get_client_addr(int sock)
 {
     sockaddr_in client;
@@ -91,3 +116,4 @@ void del_client(vector<pollfd>::iterator it)
     poll_sets.erase(it);
     close(it->fd);
 }
+

@@ -21,6 +21,8 @@ void Setsockopt(int lsockfd);
 void Bind(int lsockfd, string ip, int port);
 void Listen(int lsockfd);
 int Accept(int lsockfd);
+int Send(int sockfd, const char *buff, int bufflen);
+int Connect(int sockfd, string ip, int port);
 sockaddr_in get_client_addr(int sockfd);
 
 void server_overwhelmed(int client_sock);
