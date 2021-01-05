@@ -2,9 +2,12 @@
 #include "loadbalancer.h"
 #include "log.h"
 #include "config.h"
+#include <sys/msg.h>
+#include <sys/ipc.h>
 
 using namespace std;
 
+int msqid;
 
 int main(int argc, char **argv)
 {
@@ -17,6 +20,9 @@ int main(int argc, char **argv)
     string ip = argv[1];
     int port = stoi(argv[2]);
 
+    init_log(ip);
+    init_msg_queue();
+
     vector<shared_ptr<backend>> backends;
     config_from_file(backends);
 
@@ -27,9 +33,15 @@ int main(int argc, char **argv)
         lb->set_active(true);
     }
 
-    start_server(ip, port, lb);
-
+    if (lb->get_active())
+    {
+        start_server(ip, port, lb);
+    }
+    else
+    {
+        handle_log_standby();
+    }
     
-   
+
     return 0;
 }

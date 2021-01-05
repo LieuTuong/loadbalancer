@@ -1,8 +1,21 @@
-#include "header.h"
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <iostream>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
+#include <string>
 #include <csignal>
 using namespace std;
 #define PORT 12345
 int msg_id;
+
+struct message
+{
+    long msg_type;
+    char msg[100];
+};
 
 void sigStop_handler(int sig)
 {

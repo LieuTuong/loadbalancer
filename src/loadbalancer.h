@@ -8,6 +8,7 @@
 
 extern vector<pollfd> poll_sets;
 extern uint BUF_SIZE;
+extern int msqid;
 
 class backend
 {
@@ -89,9 +90,11 @@ public:
 
 void start_server(string ip, int port, shared_ptr<lb_base> &lb);
 
-void handle_log(int client_sock);
+void handle_log_active(int client_sock);
 
-char *change_header(string header, string ws_ip);
+void handle_log_standby();
+
+char* change_header(string header, string ws_ip);
 
 void proxy_handler( const shared_ptr<backend>& ws,int client_sock, string client_request);
 

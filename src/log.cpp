@@ -16,16 +16,24 @@ void log_close()
     logfd.close();
 }
 
-void log(string time, string ip, int port)
+string log(string time, string ip, int port)
 {
-    logfd << "ip: " << ip << "|" \
-          << "port: " << port << "|" \
-          << "time: " << time << endl;
+    string tmp;
+    tmp.append("ip: ").append(ip).append(" | ");
+    tmp.append("port: ").append(to_string(port)).append(" | ");
+    tmp.append("time: ").append(time);
+    logfd << tmp;
+    return tmp;
+}
+
+void log(string msg)
+{
+    logfd << msg;
 }
 
 void log_terminal(string time, string ip, int port)
 {
-    cout << "ip: " << ip << " | " \
-         << "port: " << port << " | " \
+    cout << "ip: " << ip << " | "
+         << "port: " << port << " | "
          << "time: " << time << endl;
 }

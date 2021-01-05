@@ -11,6 +11,13 @@ void init_log(string ip)
     log_init(fname, ip);
 }
 
+void init_msg_queue()
+{
+    key_t my_key;
+    my_key = ftok("lb", 65);
+    msqid = msgget(my_key, 0666 | IPC_CREAT);
+}
+
 void config_from_file(vector<shared_ptr<backend>> &backends)
 {
     ifstream infile(config_file);

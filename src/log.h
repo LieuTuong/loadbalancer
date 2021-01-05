@@ -16,7 +16,9 @@ static ofstream logfd;
 
 void log_init(string filename, string ip);
 
-void log(string time, string ip, int port);
+string log(string time, string ip, int port);
+
+void log( string msg);
 
 void log_terminal(string time, string ip, int port);
 

@@ -71,7 +71,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
                         proxy_handler(myws, it->fd, string(buffer));
 
                         //ghi log va xu ly msg_queue
-                        handle_log(it->fd);
+                        handle_log_active(it->fd);
                     }
                 }
             }
@@ -93,7 +93,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
     }
 }
 
-void handle_log(int client_sock)
+void handle_log_active(int client_sock)
 {
     // get client addr
     sockaddr_in sa = get_client_addr(client_sock);
@@ -105,10 +105,31 @@ void handle_log(int client_sock)
     string timenow = get_time();
 
     // write to log
-    log(timenow, ip, port);
+    string msg_log = log(timenow, ip, port);
     log_terminal(timenow, ip, port);
 
     // add to msg queue
+    struct message msgSend;
+    (void)strcpy(msgSend.msg, msg_log.c_str());
+    msgsnd(msqid, &msgSend, sizeof(message), 0);
+}
+
+void handle_log_standby()
+{
+    // doc tu msg_queue
+    while (1)
+    {
+        message msgRecv;
+        if (msgrcv(msqid, &msgRecv, sizeof(message),0,0) <0)
+        {
+            cerr<<"msgrcv() error in handle_log_standby !"<<endl;
+        }
+
+        else // ghi vao log
+        {
+            log(msgRecv.msg);
+        }        
+    }   
 }
 
 //========================== PROXY's AREA ===========================
@@ -145,7 +166,7 @@ void proxy_handler(const shared_ptr<backend> &ws, int client_sock, string client
     }
 
     // set lai header
-    char* add_cookie = change_header(response_str, ws->get_host());
+    char *add_cookie = change_header(response_str, ws->get_host());
 
     // gui cho client
     Send(client_sock, add_cookie, strlen(add_cookie));
