@@ -94,7 +94,7 @@ void handle_log_active(int client_sock);
 
 void handle_log_standby();
 
-char* change_header(string header, string ws_ip);
+void change_header(vector<char> &header, string ws_ip);
 
 void proxy_handler( const shared_ptr<backend>& ws,int client_sock, string client_request);
 

@@ -1,6 +1,8 @@
 #include "loadbalancer.h"
+#include <poll.h>
+#include <vector>
 
-uint BUF_SIZE = 5000;
+uint BUF_SIZE = 20000;
 
 void start_server(string ip, int port, shared_ptr<lb_base> &lb)
 {
@@ -71,7 +73,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
                         proxy_handler(myws, it->fd, string(buffer));
 
                         //ghi log va xu ly msg_queue
-                        handle_log_active(it->fd);
+                        //handle_log_active(it->fd);
                     }
                 }
             }
@@ -120,30 +122,35 @@ void handle_log_standby()
     while (1)
     {
         message msgRecv;
-        if (msgrcv(msqid, &msgRecv, sizeof(message),0,0) <0)
+        if (msgrcv(msqid, &msgRecv, sizeof(message), 0, 0) < 0)
         {
-            cerr<<"msgrcv() error in handle_log_standby !"<<endl;
+            cerr << "msgrcv() error in handle_log_standby !" << endl;
         }
 
         else // ghi vao log
         {
             log(msgRecv.msg);
-        }        
-    }   
+        }
+    }
 }
 
 //========================== PROXY's AREA ===========================
 
-char *change_header(string header, string ws_ip)
+void change_header(vector<char> &header, string ws_ip)
 {
     string insert_str = "Set-cookie: SERVERID=";
     insert_str.append(ws_ip);
     insert_str.append("\r\n");
-    int pos = header.find_first_of("\r\n");
-    header.insert(pos + strlen("\r\n"), insert_str);
-    char *res = new char[header.length()];
-    memcpy(res, header.c_str(), header.length());
-    return res;
+
+    int index;
+    for (int i = 0; i < header.size(); i++)
+    {
+        if (header[i] == '\r' && header[i + 1] == '\n')
+        {
+            header.insert(header.begin() + i + 2, insert_str.begin(), insert_str.end());
+            return;
+        }
+    }
 }
 
 void proxy_handler(const shared_ptr<backend> &ws, int client_sock, string client_request)
@@ -158,20 +165,43 @@ void proxy_handler(const shared_ptr<backend> &ws, int client_sock, string client
     // nhan request
     int recv_each;
     char buff[BUF_SIZE];
-    string response_str;
-    while ((recv_each = recv(ws_sockfd, buff, BUF_SIZE, 0)) > 0)
+    vector<char> response_vec;
+    while (1)
     {
-        response_str.append(buff);
+
+        recv_each = recv(ws_sockfd, buff, BUF_SIZE, 0);
+        if (recv_each <= 0)
+            break;
+        cout << "trung: " << recv_each << endl;
+        // them vao vector
+        for (int i = 0; i < recv_each; i++)
+        {
+            response_vec.push_back(buff[i]);
+        }
         memset(buff, 0, BUF_SIZE);
     }
 
+    cout << response_vec.size() << endl;
     // set lai header
-    char *add_cookie = change_header(response_str, ws->get_host());
+    change_header(response_vec, ws->get_host());
 
     // gui cho client
-    Send(client_sock, add_cookie, strlen(add_cookie));
-
-    delete[] add_cookie;
+    cout << "=======" << endl;
+    /*while (response_vec.size() != 0)
+    {
+        cout<<"trung "<<response_vec.size()<<endl;
+        if (response_vec.size() >= 20000)
+            cout<<send(client_sock, &response_vec[0], 20000, 0)<<endl;
+        else
+        {
+            cout<<send(client_sock,&response_vec[0],response_vec.size(),0)<<endl;
+            break;
+        }
+        response_vec.erase(response_vec.begin(),response_vec.begin()+20000);
+    }*/
+    cout << send(client_sock, &response_vec[0], response_vec.size(), 0) << endl;
+    //cout << Send(client_sock, &response_vec[0], response_vec.size()) << endl;
 
     close(ws_sockfd);
+    close(client_sock);
 }
