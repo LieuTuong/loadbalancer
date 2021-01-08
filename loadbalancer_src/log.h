@@ -15,6 +15,7 @@
 
 static ofstream logfd;
 extern string lb_ip;
+class backend;
 
 void log_open();
 

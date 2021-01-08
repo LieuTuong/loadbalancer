@@ -5,7 +5,6 @@
 #include "config.h"
 #include <string.h>
 
-
 extern vector<pollfd> poll_sets;
 extern uint BUF_SIZE;
 extern int msqid;
@@ -33,6 +32,11 @@ public:
 
     bool get_alive() { return alive_; }
     void set_alive(bool alive) { alive_ = alive; }
+
+    void print_ws_info()
+    {
+        cout << "ws_info: " << this->get_host() << ":" << this->get_port();
+    }
 };
 
 class lb_base
@@ -67,6 +71,20 @@ public:
     }
     void set_active(bool active) { active_ = active; }
     bool get_active() { return active_; }
+
+    shared_ptr<backend> choose_webserver(string cookie_ip)
+    {
+        if (cookie_ip.empty())
+            return this->select();
+        for (int i = 0; i < backends_.size(); ++i)
+        {
+            if (backends_[i]->get_host() == cookie_ip)
+            {
+                return backends_[i];
+            }
+        }
+        return this->select();
+    }
 };
 
 class lb_rr : public lb_base
@@ -90,12 +108,13 @@ public:
 
 void start_server(string ip, int port, shared_ptr<lb_base> &lb);
 
-void handle_log_active(int client_sock);
+void handle_log_active(int client_sock, shared_ptr<backend> ws);
 
 void handle_log_standby();
 
 void change_header(vector<char> &header, string ws_ip);
 
-void proxy_handler( const shared_ptr<backend>& ws,int client_sock, string client_request);
+void proxy_handler(const shared_ptr<backend> &ws, int client_sock, string client_request);
 
+string get_cookie_wsip(string msg);
 #endif

@@ -65,16 +65,17 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
                     }
                     else
                     {
+                        //chon ws de xu ly
                         string msg(buffer);
-                        shared_ptr<backend> myws;
-                        // neu header cua client da co set-cookie
-
-                        // chon server theo kieu rr
-                        myws = lb->select();
+                        string cookie_ws_ip = get_cookie_wsip(msg);
+                        cout<<cookie_ws_ip<<endl;
+                        shared_ptr<backend> myws = lb->choose_webserver(cookie_ws_ip);
+                       
+                        //myws = lb->select();
                         std::cout << "id: " << myws->get_id() << ", host: " << myws->get_host() << ", port: " << myws->get_port() << ", alive: " << myws->get_alive() << std::endl;
 
                         //ghi log va xu ly msg_queue
-                        handle_log_active(it->fd);
+                        handle_log_active(it->fd, myws);
 
                         // proxy
                         proxy_handler(myws, it->fd, msg);
@@ -99,7 +100,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
     }
 }
 
-void handle_log_active(int client_sock)
+void handle_log_active(int client_sock, shared_ptr<backend> ws)
 {
     // get client addr
     sockaddr_in sa = get_client_addr(client_sock);
@@ -116,7 +117,7 @@ void handle_log_active(int client_sock)
 
     // add to msg queue
     struct message msgSend;
-    msgSend.msg_type=1;
+    msgSend.msg_type = 1;
     (void)strcpy(msgSend.msg, msg_log.c_str());
     msgsnd(msqid, &msgSend, sizeof(message), 0);
 }
@@ -139,19 +140,18 @@ void handle_log_standby()
     }
 }
 
-string select_webserver(string msg)
+string get_cookie_wsip(string msg)
 {
     string ip;
-    if (msg.find("cookie") != string::npos)
+    if (msg.find("Cookie:") != string::npos)
     {
         int ip_start = msg.find("SERVERID=") + strlen("SERVERID=");
         int ip_end = msg.find_first_of("\r\n", ip_start);
         ip = msg.substr(ip_start, ip_end - ip_start);
     }
-    else
-    {
-    }
+    return ip;
 }
+
 //========================== PROXY's AREA ===========================
 
 void change_header(vector<char> &header, string ws_ip)

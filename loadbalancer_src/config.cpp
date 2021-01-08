@@ -19,7 +19,9 @@ void config_from_file(vector<shared_ptr<backend>> &backends)
         shared_ptr<backend> ws(new backend());
         string tmp;
         stringstream check(line);
-
+        
+        // get name
+        
         //get host
         getline(check, tmp, ':');
         ws->set_host(tmp);

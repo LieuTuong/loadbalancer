@@ -47,8 +47,9 @@ void log(string msg)
 
 void log_terminal(string time, string ip, int port)
 {
-
     cout << CYAN << "ip: " << ip << " | "
          << "port: " << port << " | "
-         << "time: " << time << RESET << endl;
+         << "time: " << time << " | ";
+    //ws->print_ws_info();
+    cout << RESET << endl;
 }
