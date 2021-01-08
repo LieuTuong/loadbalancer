@@ -5,8 +5,7 @@ string config_file = "webservers.txt";
 
 void init_msg_queue()
 {
-    key_t my_key;
-    my_key = ftok("lb", 65);
+    key_t my_key=123;
     msqid = msgget(my_key, 0666 | IPC_CREAT);
 }
 

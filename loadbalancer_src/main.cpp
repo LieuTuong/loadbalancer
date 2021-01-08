@@ -2,9 +2,6 @@
 #include "loadbalancer.h"
 #include "log.h"
 #include "config.h"
-#include <sys/msg.h>
-#include <sys/ipc.h>
-
 using namespace std;
 
 int msqid;

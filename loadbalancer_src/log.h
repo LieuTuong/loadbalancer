@@ -12,9 +12,9 @@
 #define YELLOW "\033[33m" /* Yellow */
 #define CYAN "\033[36m"
 #define LOG_DIR "../loadbalancer_logs/"
+
 static ofstream logfd;
 extern string lb_ip;
-//string LOG_DIR = "../loadbalancer_logs/";
 
 void log_open();
 

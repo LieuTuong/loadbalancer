@@ -8,7 +8,8 @@
 #include <string>
 #include <csignal>
 using namespace std;
-#define PORT 12345
+#define PORT 11111
+
 int msg_id;
 
 struct message
@@ -25,14 +26,12 @@ void sigStop_handler(int sig)
 
 int main()
 {
-    key_t my_key;
-    my_key = ftok("netdsrv", 65);
+    key_t my_key=333;
     msg_id = msgget(my_key, 0666 | IPC_CREAT);
 
     signal(SIGINT, sigStop_handler);
 
     //nhan msg roi xu li
-
     int server_fd, sckclient, valread;
     struct sockaddr_in address;
     int opt = 1;
@@ -71,20 +70,22 @@ int main()
     char buff[1024];
     while (1)
     {
-        if ((sckclient = accept(server_fd, (struct sockaddr *)&address,
-                                (socklen_t *)&addrlen)) < 0)
+        cout<<"aaaaaaaaaaaaaa"<<endl;
+        if ((sckclient = accept(server_fd, (struct sockaddr *)&address,(socklen_t *)&addrlen)) < 0)
         {
             std::cerr << "accept failed\n";
             exit(EXIT_FAILURE);
         }
         memset(buff, 0, sizeof(buff));
-
+        cout<<"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"<<endl;
         if (recv(sckclient, buff, sizeof(buff), 0) < 0)
         {
             std::cerr << "recv error\n";
         }
         else
         {
+            cout<<"tuong heu"<<endl;
+            cout<<buff<<endl;
             struct message msgSend;
 
             msgSend.msg_type = 1;

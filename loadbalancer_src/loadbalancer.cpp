@@ -65,15 +65,19 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
                     }
                     else
                     {
+                        string msg(buffer);
+                        shared_ptr<backend> myws;
+                        // neu header cua client da co set-cookie
+
                         // chon server theo kieu rr
-                        auto myws = lb->select();
+                        myws = lb->select();
                         std::cout << "id: " << myws->get_id() << ", host: " << myws->get_host() << ", port: " << myws->get_port() << ", alive: " << myws->get_alive() << std::endl;
 
                         //ghi log va xu ly msg_queue
                         handle_log_active(it->fd);
 
                         // proxy
-                        proxy_handler(myws, it->fd, string(buffer));
+                        proxy_handler(myws, it->fd, msg);
                     }
                 }
             }
@@ -111,9 +115,10 @@ void handle_log_active(int client_sock)
     log_terminal(timenow, ip, port);
 
     // add to msg queue
-    /*struct message msgSend;
+    struct message msgSend;
+    msgSend.msg_type=1;
     (void)strcpy(msgSend.msg, msg_log.c_str());
-    msgsnd(msqid, &msgSend, sizeof(message), 0);*/
+    msgsnd(msqid, &msgSend, sizeof(message), 0);
 }
 
 void handle_log_standby()
@@ -134,6 +139,19 @@ void handle_log_standby()
     }
 }
 
+string select_webserver(string msg)
+{
+    string ip;
+    if (msg.find("cookie") != string::npos)
+    {
+        int ip_start = msg.find("SERVERID=") + strlen("SERVERID=");
+        int ip_end = msg.find_first_of("\r\n", ip_start);
+        ip = msg.substr(ip_start, ip_end - ip_start);
+    }
+    else
+    {
+    }
+}
 //========================== PROXY's AREA ===========================
 
 void change_header(vector<char> &header, string ws_ip)

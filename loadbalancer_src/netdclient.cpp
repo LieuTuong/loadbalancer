@@ -9,6 +9,9 @@
 #include <csignal>
 using namespace std;
 
+string netdsrv_ip("127.0.0.1");
+int netdsrv_port = 11111;
+
 struct message
 {
     long msg_type;
@@ -57,20 +60,21 @@ void send_mess(std::string ip, int port, std::string msg)
 
 int main()
 {
-    key_t my_key;
-    my_key = ftok("netdclient", 65);
+    key_t my_key = 123;
     msg_id = msgget(my_key, 0666 | IPC_CREAT);
 
     signal(SIGINT, sigStop_handler);
 
     while (1)
     {
+        cout<<"tuong gia"<<endl;
         message msgRecv;
         if (msgrcv(msg_id, &msgRecv, sizeof(message), 1, 0) < 0)
         {
             cerr << "msgrcv error" << endl;
         }
+        cout<<"trung"<<endl;
+        send_mess(netdsrv_ip, netdsrv_port, string(msgRecv.msg));
         cout << msgRecv.msg << endl;
-        send_mess(string("127.0.0.1"), 12345, string(msgRecv.msg));
     }
 }
