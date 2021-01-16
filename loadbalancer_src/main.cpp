@@ -5,19 +5,19 @@
 using namespace std;
 
 int msqid;
-string lb_ip;
-int lb_port;
+string lb_ip("172.18.0.200");
+int lb_port = 8888;
 
 int main(int argc, char **argv)
 {
-    if (argc != 3 && argc != 4)
+    /*if (argc != 3 && argc != 4)
     {
         cout << "Not enough argument!!" << endl;
         return 0;
-    }
+    }*/
 
-    lb_ip = argv[1];
-    lb_port = stoi(argv[2]);
+    /*lb_ip = argv[1];
+    lb_port = stoi(argv[2]);*/
 
     log_init();
     init_msg_queue();
@@ -27,10 +27,7 @@ int main(int argc, char **argv)
 
     shared_ptr<lb_base> lb(new lb_rr(backends));
 
-    if (argc == 4)
-    {
-        lb->set_active(true);
-    }
+    lb->set_active(true);
 
     if (lb->get_active())
     {

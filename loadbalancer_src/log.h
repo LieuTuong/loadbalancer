@@ -21,7 +21,7 @@ void log_open();
 
 void log_init();
 
-string log(string time, string ip, int port);
+string log(string time, string ip, int port, string ws_ip);
 
 void log( string msg);
 

@@ -10,7 +10,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
     Setsockopt(lsockfd);
     Bind(lsockfd, ip, port);
     Listen(lsockfd);
-    print_start(ip, port);
+    //print_start(ip, port);
 
     pollfd listen_pollfd;
     listen_pollfd.fd = lsockfd;
@@ -44,7 +44,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
 
                     if (poll_sets.size() - 1 < MAX_CLIENTS)
                     {
-                        cout << "add client" << endl;
+                        //cout << "add client" << endl;
                         add_client(client_sock);
                     }
                     else
@@ -68,7 +68,7 @@ void start_server(string ip, int port, shared_ptr<lb_base> &lb)
                         //chon ws de xu ly
                         string msg(buffer);
                         string cookie_ws_ip = get_cookie_wsip(msg);
-                        cout<<cookie_ws_ip<<endl;
+                        //cout<<cookie_ws_ip<<endl;
                         shared_ptr<backend> myws = lb->choose_webserver(cookie_ws_ip);
                        
                         //myws = lb->select();
@@ -112,8 +112,8 @@ void handle_log_active(int client_sock, shared_ptr<backend> ws)
     string timenow = get_time();
 
     // write to log
-    string msg_log = log(timenow, ip, port);
-    log_terminal(timenow, ip, port);
+    string msg_log = log(timenow, ip, port, ws->get_host());
+    //log_terminal(timenow, ip, port);
 
     // add to msg queue
     struct message msgSend;

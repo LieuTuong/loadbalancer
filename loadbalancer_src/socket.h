@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 using namespace std;
 
 #define MAX_CLIENTS 100

@@ -3,13 +3,12 @@
 void log_init()
 {
     string fname(LOG_DIR);
-    fname.append(lb_ip);
-    fname.append("_log.txt");
-    logfd.open(fname, fstream::out);
+    fname.append("log.txt");
+    logfd.open(fname, fstream::app);
     if (logfd.is_open())
     {
         logfd << "===================================" << endl;
-        logfd << " Server " << lb_ip << "'s LOGS FILE " << endl;
+        logfd << " Server's LOGS FILE " << endl;
         logfd << "===================================\n\n\n";
     }
     logfd.close();
@@ -23,17 +22,17 @@ void log_close()
 void log_open()
 {
     string fname(LOG_DIR);
-    fname.append(lb_ip);
-    fname.append("_log.txt");
+    fname.append("log.txt");
     logfd.open(fname, fstream::app);
 }
 
-string log(string time, string ip, int port)
+string log(string time, string ip, int port, string ws_ip)
 {
     log_open();
     string tmp;
     tmp.append("ip: ").append(ip).append(" | ");
     tmp.append("port: ").append(to_string(port)).append(" | ");
+tmp.append("ws_ip: ").append(ws_ip).append(" | ");
     tmp.append("time: ").append(time);
     logfd << tmp;
     log_close();

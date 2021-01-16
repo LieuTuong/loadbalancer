@@ -1,0 +1,5 @@
+FROM centos
+COPY . /
+WORKDIR "./webserver_src"
+RUN yum install -y make && make 
+CMD exec ./server

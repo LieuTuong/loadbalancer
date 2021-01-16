@@ -1,0 +1,77 @@
+<cib crm_feature_set="3.0.14" validate-with="pacemaker-2.10" epoch="49" num_updates="39" admin_epoch="0" cib-last-written="Sat Jan  9 09:16:33 2021" update-origin="pc2" update-client="cibadmin" update-user="root" have-quorum="1" dc-uuid="1">
+  <configuration>
+    <crm_config>
+      <cluster_property_set id="cib-bootstrap-options">
+        <nvpair id="cib-bootstrap-options-have-watchdog" name="have-watchdog" value="false"/>
+        <nvpair id="cib-bootstrap-options-dc-version" name="dc-version" value="1.1.23-1.el7_9.1-9acf116022"/>
+        <nvpair id="cib-bootstrap-options-cluster-infrastructure" name="cluster-infrastructure" value="corosync"/>
+        <nvpair id="cib-bootstrap-options-cluster-name" name="cluster-name" value="ha_cluster"/>
+        <nvpair id="cib-bootstrap-options-stonith-enabled" name="stonith-enabled" value="false"/>
+        <nvpair id="cib-bootstrap-options-no-quorum-policy" name="no-quorum-policy" value="ignore"/>
+      </cluster_property_set>
+    </crm_config>
+    <nodes>
+      <node id="1" uname="pc1"/>
+      <node id="2" uname="pc2"/>
+    </nodes>
+    <resources>
+      <primitive class="ocf" id="Cluster_VIP" provider="heartbeat" type="IPaddr2">
+        <instance_attributes id="Cluster_VIP-instance_attributes">
+          <nvpair id="Cluster_VIP-instance_attributes-cidr_netmask" name="cidr_netmask" value="24"/>
+          <nvpair id="Cluster_VIP-instance_attributes-ip" name="ip" value="172.18.0.200"/>
+        </instance_attributes>
+        <operations>
+          <op id="Cluster_VIP-monitor-interval-20s" interval="20s" name="monitor"/>
+          <op id="Cluster_VIP-start-interval-0s" interval="0s" name="start" timeout="20s"/>
+          <op id="Cluster_VIP-stop-interval-0s" interval="0s" name="stop" timeout="20s"/>
+        </operations>
+      </primitive>
+      <primitive class="systemd" id="loadbalance" type="lb">
+        <operations>
+          <op id="loadbalance-monitor-interval-5s" interval="5s" name="monitor" on-fail="restart"/>
+          <op id="loadbalance-start-interval-0s" interval="0s" name="start" timeout="100"/>
+          <op id="loadbalance-stop-interval-0s" interval="0s" name="stop" timeout="100"/>
+        </operations>
+      </primitive>
+    </resources>
+    <constraints>
+      <rsc_colocation id="colocation-loadbalance-Cluster_VIP-INFINITY" rsc="loadbalance" score="INFINITY" with-rsc="Cluster_VIP"/>
+    </constraints>
+  </configuration>
+  <status>
+    <node_state id="2" uname="pc2" in_ccm="true" crmd="online" crm-debug-origin="do_update_resource" join="member" expected="member">
+      <lrm id="2">
+        <lrm_resources>
+          <lrm_resource id="Cluster_VIP" type="IPaddr2" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="Cluster_VIP_last_0" operation_key="Cluster_VIP_start_0" operation="start" crm-debug-origin="do_update_resource" crm_feature_set="3.0.14" transition-key="5:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" transition-magic="0:0;5:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" exit-reason="" on_node="pc2" call-id="11" rc-code="0" op-status="0" interval="0" last-run="1610184212" last-rc-change="1610184212" exec-time="73" queue-time="0" op-digest="2244e377bb345bec76004af86e561701"/>
+            <lrm_rsc_op id="Cluster_VIP_monitor_20000" operation_key="Cluster_VIP_monitor_20000" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.0.14" transition-key="6:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" transition-magic="0:0;6:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" exit-reason="" on_node="pc2" call-id="12" rc-code="0" op-status="0" interval="20000" last-rc-change="1610184212" exec-time="53" queue-time="0" op-digest="6770f01b8ae069fc08888fc4e775b5b7"/>
+          </lrm_resource>
+          <lrm_resource id="loadbalance" type="lb" class="systemd">
+            <lrm_rsc_op id="loadbalance_last_0" operation_key="loadbalance_start_0" operation="start" crm-debug-origin="do_update_resource" crm_feature_set="3.0.14" transition-key="7:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" transition-magic="0:0;7:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" exit-reason="" on_node="pc2" call-id="10" rc-code="0" op-status="0" interval="0" last-run="1610184212" last-rc-change="1610184212" exec-time="2052" queue-time="0" op-digest="f2317cad3d54cec5d7d7aa7d0bf35cf8"/>
+            <lrm_rsc_op id="loadbalance_monitor_5000" operation_key="loadbalance_monitor_5000" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.0.14" transition-key="8:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" transition-magic="0:0;8:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" exit-reason="" on_node="pc2" call-id="13" rc-code="0" op-status="0" interval="5000" last-rc-change="1610184214" exec-time="1" queue-time="0" op-digest="4811cef7f7f94e3a35a70be7916cb2fd"/>
+          </lrm_resource>
+        </lrm_resources>
+      </lrm>
+    </node_state>
+    <node_state id="1" uname="pc1" in_ccm="true" crmd="online" crm-debug-origin="do_update_resource" join="member" expected="member">
+      <transient_attributes id="1">
+        <instance_attributes id="status-1">
+          <nvpair id="status-1-fail-count-loadbalance.start_0" name="fail-count-loadbalance#start_0" value="INFINITY"/>
+          <nvpair id="status-1-last-failure-loadbalance.start_0" name="last-failure-loadbalance#start_0" value="1610183769"/>
+        </instance_attributes>
+      </transient_attributes>
+      <lrm id="1">
+        <lrm_resources>
+          <lrm_resource id="Cluster_VIP" type="IPaddr2" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="Cluster_VIP_last_0" operation_key="Cluster_VIP_stop_0" operation="stop" crm-debug-origin="do_update_resource" crm_feature_set="3.0.14" transition-key="4:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" transition-magic="0:0;4:1:0:2cd6eec0-7806-4408-b28e-22e0503d0e70" exit-reason="" on_node="pc1" call-id="24" rc-code="0" op-status="0" interval="0" last-run="1610184212" last-rc-change="1610184212" exec-time="52" queue-time="0" op-digest="2244e377bb345bec76004af86e561701"/>
+            <lrm_rsc_op id="Cluster_VIP_monitor_20000" operation_key="Cluster_VIP_monitor_20000" operation="monitor" crm-debug-origin="build_active_RAs" crm_feature_set="3.0.14" transition-key="5:15:0:f023ec38-2457-4d29-8d36-44adfd0034b8" transition-magic="0:0;5:15:0:f023ec38-2457-4d29-8d36-44adfd0034b8" exit-reason="" on_node="pc1" call-id="22" rc-code="0" op-status="0" interval="20000" last-rc-change="1610183818" exec-time="33" queue-time="0" op-digest="6770f01b8ae069fc08888fc4e775b5b7"/>
+          </lrm_resource>
+          <lrm_resource id="loadbalance" type="lb" class="systemd">
+            <lrm_rsc_op id="loadbalance_last_failure_0" operation_key="loadbalance_start_0" operation="start" crm-debug-origin="build_active_RAs" crm_feature_set="3.0.14" transition-key="6:10:0:f023ec38-2457-4d29-8d36-44adfd0034b8" transition-magic="0:1;6:10:0:f023ec38-2457-4d29-8d36-44adfd0034b8" exit-reason="" on_node="pc1" call-id="19" rc-code="1" op-status="0" interval="0" last-run="1610183767" last-rc-change="1610183767" exec-time="2036" queue-time="0" op-digest="f2317cad3d54cec5d7d7aa7d0bf35cf8"/>
+            <lrm_rsc_op id="loadbalance_last_0" operation_key="loadbalance_stop_0" operation="stop" crm-debug-origin="build_active_RAs" crm_feature_set="3.0.14" transition-key="2:13:0:f023ec38-2457-4d29-8d36-44adfd0034b8" transition-magic="0:0;2:13:0:f023ec38-2457-4d29-8d36-44adfd0034b8" exit-reason="" on_node="pc1" call-id="20" rc-code="0" op-status="0" interval="0" last-run="1610183769" last-rc-change="1610183769" exec-time="2044" queue-time="0" op-digest="f2317cad3d54cec5d7d7aa7d0bf35cf8"/>
+          </lrm_resource>
+        </lrm_resources>
+      </lrm>
+    </node_state>
+  </status>
+</cib>

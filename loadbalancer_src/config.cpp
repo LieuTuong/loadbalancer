@@ -20,7 +20,7 @@ void config_from_file(vector<shared_ptr<backend>> &backends)
         string tmp;
         stringstream check(line);
         
-        // get name
+
         
         //get host
         getline(check, tmp, ':');

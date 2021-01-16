@@ -7,9 +7,10 @@
 #include <string.h>
 #include <string>
 #include <csignal>
+#include<cstdlib>
 using namespace std;
 
-string netdsrv_ip("127.0.0.1");
+string netdsrv_ip("172.18.0.3");
 int netdsrv_port = 11111;
 
 struct message
@@ -47,16 +48,22 @@ void send_mess(std::string ip, int port, std::string msg)
         std::cerr << "\nInvalid address/ Address not supported \n";
         return;
     }
-
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    while (1)
     {
-        std::cerr << "\nConnection Failed \n";
-        return;
+        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            sleep(5);
+        }
+        else
+        {
+            break;
+        }
     }
 
     send(sock, msg.c_str(), msg.length(), 0);
     close(sock);
 }
+
 
 int main()
 {
@@ -67,13 +74,11 @@ int main()
 
     while (1)
     {
-        cout<<"tuong gia"<<endl;
         message msgRecv;
         if (msgrcv(msg_id, &msgRecv, sizeof(message), 1, 0) < 0)
         {
             cerr << "msgrcv error" << endl;
         }
-        cout<<"trung"<<endl;
         send_mess(netdsrv_ip, netdsrv_port, string(msgRecv.msg));
         cout << msgRecv.msg << endl;
     }

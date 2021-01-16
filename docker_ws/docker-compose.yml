@@ -1,0 +1,39 @@
+version: "3.3"
+services:
+ pc1:
+  image: "lieutuong/pc1:final"
+  hostname: pc1
+  tty: true
+  privileged: true
+  stdin_open: true
+  networks:
+   default:
+    ipv4_address: 172.18.0.2
+ pc2:
+  image: "lieutuong/pc2:final"
+  hostname: pc2
+  tty: true
+  privileged: true
+  stdin_open: true
+  networks:
+   default:
+    ipv4_address: 172.18.0.3
+ srv1:
+  build:
+   context: .
+   dockerfile: Dockerfile_srv
+  hostname: srv1
+  networks:
+   default:
+    ipv4_address: 172.18.0.4
+ srv2:        
+  build:
+   context: .
+   dockerfile: Dockerfile_srv
+  hostname: srv2
+  networks:
+   default:
+    ipv4_address: 172.18.0.5
+
+
+
